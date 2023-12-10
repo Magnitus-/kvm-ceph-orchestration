@@ -110,8 +110,12 @@ resource "libvirt_volume" "ceph_3_data_4" {
 }
 
 module "ceph_1" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-libvirt-custom-server.git?ref=b1b289b90d1e0f634627822e35e42ba2375c505c"
+  source = "./terraform-libvirt-custom-server"
   name = "ceph-1"
+  hostname = {
+    hostname = "server-1.ceph.lan"
+    is_fqdn  = true
+  }
   vcpus = 2
   memory = 12288
   volume_ids = [
@@ -139,19 +143,33 @@ module "ceph_1" {
   ssh_admin_public_key = file("${path.module}/../shared/ssh_key_public")
   cloud_init_configurations = [
     {
-        filename = "ceph_node.cfg"
-        content = file("${path.module}/terraform-cloudinit/ceph-node/user_data.yaml")
+      filename = "ceph_node.cfg"
+      content = file("${path.module}/terraform-cloudinit/ceph-node/user_data.yaml")
     },
     {
-        filename = "cephadm.cfg"
-        content = file("${path.module}/terraform-cloudinit/cephadm/user_data.yaml")
+      filename = "cephadm.cfg"
+      content = templatefile(
+        "${path.module}/terraform-cloudinit/cephadm/user_data.yaml",
+        {
+          tls = {
+            ca_cert     = module.ceph_ca.certificate
+            server_cert = tls_locally_signed_cert.ceph.cert_pem
+            server_key  = tls_private_key.ceph.private_key_pem
+          }
+          self_ip = local.params.network.machines.ceph_nodes.0.ip
+        }
+      )
     }
   ]
 }
 
 module "ceph_2" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-libvirt-custom-server.git?ref=b1b289b90d1e0f634627822e35e42ba2375c505c"
+  source = "./terraform-libvirt-custom-server"
   name = "ceph-2"
+  hostname = {
+    hostname = "server-2.ceph.lan"
+    is_fqdn  = true
+  }
   vcpus = 2
   memory = 12288
   volume_ids = [
@@ -184,14 +202,28 @@ module "ceph_2" {
     },
     {
       filename = "cephadm.cfg"
-      content = file("${path.module}/terraform-cloudinit/cephadm/user_data.yaml")
+      content = templatefile(
+        "${path.module}/terraform-cloudinit/cephadm/user_data.yaml",
+        {
+          tls = {
+            ca_cert     = module.ceph_ca.certificate
+            server_cert = tls_locally_signed_cert.ceph.cert_pem
+            server_key  = tls_private_key.ceph.private_key_pem
+          }
+          self_ip = local.params.network.machines.ceph_nodes.1.ip
+        }
+      )
     }
   ]
 }
 
 module "ceph_3" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-libvirt-custom-server.git?ref=b1b289b90d1e0f634627822e35e42ba2375c505c"
+  source = "./terraform-libvirt-custom-server"
   name = "ceph-3"
+  hostname = {
+    hostname = "server-3.ceph.lan"
+    is_fqdn  = true
+  }
   vcpus = 2
   memory = 12288
   volume_ids = [
@@ -224,7 +256,17 @@ module "ceph_3" {
     },
     {
       filename = "cephadm.cfg"
-      content = file("${path.module}/terraform-cloudinit/cephadm/user_data.yaml")
+      content = templatefile(
+        "${path.module}/terraform-cloudinit/cephadm/user_data.yaml",
+        {
+          tls = {
+            ca_cert     = module.ceph_ca.certificate
+            server_cert = tls_locally_signed_cert.ceph.cert_pem
+            server_key  = tls_private_key.ceph.private_key_pem
+          }
+          self_ip = local.params.network.machines.ceph_nodes.2.ip
+        }
+      )
     }
   ]
 }

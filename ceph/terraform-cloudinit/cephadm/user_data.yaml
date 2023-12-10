@@ -5,6 +5,32 @@ merge_how:
  - name: dict
    settings: [no_replace, recurse_list]
 
+write_files:
+  - path: /opt/ceph/tls/ca.crt
+    owner: root:root
+    permissions: "0400"
+    content: |
+      ${indent(6, tls.ca_cert)}
+  - path: /opt/ceph/tls/server.crt
+    owner: root:root
+    permissions: "0400"
+    content: |
+      ${indent(6, tls.server_cert)}
+  - path: /opt/ceph/tls/server.key
+    owner: root:root
+    permissions: "0400"
+    content: |
+      ${indent(6, tls.server_key)}
+  - path: /opt/scripts/bootstrap.sh
+    owner: root:root
+    permissions: "0500"
+    content: |
+      cephadm bootstrap --mon-ip ${self_ip} \
+                        --allow-fqdn-hostname \
+                        --ssh-user ubuntu \
+                        --dashboard-key /opt/ceph/tls/server.key \
+                        --dashboard-crt /opt/ceph/tls/server.crt
+
 runcmd:
   - wget https://download.ceph.com/rpm-18.2.0/el9/noarch/cephadm
   - chmod +x cephadm

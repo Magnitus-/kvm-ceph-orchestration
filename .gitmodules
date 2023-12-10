@@ -1,0 +1,3 @@
+[submodule "ceph/terraform-libvirt-custom-server"]
+	path = ceph/terraform-libvirt-custom-server
+	url = git@github.com:Ferlab-Ste-Justine/terraform-libvirt-custom-server.git
