@@ -109,6 +109,32 @@ resource "libvirt_volume" "ceph_3_data_4" {
   format           = "qcow2"
 }
 
+locals {
+  ceph_cluster = [
+    {
+      ip = local.params.network.machines.ceph_nodes.0.ip
+      domain = "server-1.ceph.lan"
+      monitor = true
+      manager = true
+      osd     = true
+    },
+    {
+      ip = local.params.network.machines.ceph_nodes.1.ip
+      domain = "server-2.ceph.lan"
+      monitor = true
+      manager = true
+      osd     = true
+    },
+    {
+      ip = local.params.network.machines.ceph_nodes.2.ip
+      domain = "server-3.ceph.lan"
+      monitor = true
+      manager = true
+      osd     = true
+    }
+  ]
+}
+
 module "ceph_1" {
   source = "./terraform-libvirt-custom-server"
   name = "ceph-1"
@@ -156,6 +182,11 @@ module "ceph_1" {
             server_cert = tls_locally_signed_cert.ceph.cert_pem
             server_key  = tls_private_key.ceph.private_key_pem
           }
+          ssh = {
+            public_key  = file("${path.module}/../shared/ssh_key_public")
+            private_key = file("${path.module}/../shared/ssh_key")
+          }
+          ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.0.ip
         }
       )
@@ -210,6 +241,11 @@ module "ceph_2" {
             server_cert = tls_locally_signed_cert.ceph.cert_pem
             server_key  = tls_private_key.ceph.private_key_pem
           }
+          ssh = {
+            public_key  = file("${path.module}/../shared/ssh_key_public")
+            private_key = file("${path.module}/../shared/ssh_key")
+          }
+          ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.1.ip
         }
       )
@@ -264,6 +300,11 @@ module "ceph_3" {
             server_cert = tls_locally_signed_cert.ceph.cert_pem
             server_key  = tls_private_key.ceph.private_key_pem
           }
+          ssh = {
+            public_key  = file("${path.module}/../shared/ssh_key_public")
+            private_key = file("${path.module}/../shared/ssh_key")
+          }
+          ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.2.ip
         }
       )

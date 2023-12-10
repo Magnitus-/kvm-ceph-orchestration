@@ -21,6 +21,16 @@ write_files:
     permissions: "0400"
     content: |
       ${indent(6, tls.server_key)}
+  - path: /opt/ceph/ssh/ssh_key.pub
+    owner: root:root
+    permissions: "0400"
+    content: |
+      ${indent(6, ssh.public_key)}
+  - path: /opt/ceph/ssh/ssh_key
+    owner: root:root
+    permissions: "0400"
+    content: |
+      ${indent(6, ssh.private_key)}
   - path: /opt/scripts/bootstrap.sh
     owner: root:root
     permissions: "0500"
@@ -29,7 +39,29 @@ write_files:
                         --allow-fqdn-hostname \
                         --ssh-user ubuntu \
                         --dashboard-key /opt/ceph/tls/server.key \
-                        --dashboard-crt /opt/ceph/tls/server.crt
+                        --dashboard-crt /opt/ceph/tls/server.crt \
+                        --ssh-private-key /opt/ceph/ssh/ssh_key \
+                        --ssh-public-key /opt/ceph/ssh/ssh_key.pub
+      ceph orch apply mon --unmanaged
+      ceph orch apply mgr --unmanaged
+  - path: /opt/scripts/expand.sh
+    owner: root:root
+    permissions: "0500"
+    content: |
+%{ for node in ceph_cluster ~}
+%{ if node.ip != self_ip ~}
+      ceph orch host add ${node.domain} ${node.ip}
+%{ endif ~}
+%{ if node.monitor ~}
+      ceph orch host label add ${node.domain} mon
+%{ endif ~}
+%{ if node.manager ~}
+      ceph orch host label add ${node.domain} mgr
+%{ endif ~}
+%{ if node.osd ~}
+      ceph orch host label add ${node.domain} osd
+%{ endif ~}
+%{ endfor ~}
 
 runcmd:
   - wget https://download.ceph.com/rpm-18.2.0/el9/noarch/cephadm
