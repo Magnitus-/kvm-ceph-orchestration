@@ -1,0 +1,14 @@
+#cloud-config
+merge_how:
+ - name: list
+   settings: [append, no_replace]
+ - name: dict
+   settings: [no_replace, recurse_list]
+
+runcmd:
+  - wget https://download.ceph.com/rpm-18.2.0/el9/noarch/cephadm
+  - chmod +x cephadm
+  - ./cephadm add-repo --release reef
+  - ./cephadm install
+  - rm cephadm
+  - cephadm install ceph-common

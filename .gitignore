@@ -1,0 +1,8 @@
+*/.terraform
+*/.terraform.lock.hcl
+*/terraform.tfstate
+*/terraform.tfstate.backup
+shared/*.crt
+shared/*.key
+shared/*_key_algorithm
+shared/*ssh_key*
