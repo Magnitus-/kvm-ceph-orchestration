@@ -116,6 +116,7 @@ locals {
       domain = "server-1.ceph.lan"
       monitor = true
       manager = true
+      admin   = true
       osd     = true
     },
     {
@@ -123,6 +124,7 @@ locals {
       domain = "server-2.ceph.lan"
       monitor = true
       manager = true
+      admin   = true
       osd     = true
     },
     {
@@ -130,6 +132,7 @@ locals {
       domain = "server-3.ceph.lan"
       monitor = true
       manager = true
+      admin   = true
       osd     = true
     }
   ]
@@ -188,6 +191,7 @@ module "ceph_1" {
           }
           ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.0.ip
+          public_network = local.params.network.addresses
         }
       )
     }
@@ -247,6 +251,7 @@ module "ceph_2" {
           }
           ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.1.ip
+          public_network = local.params.network.addresses
         }
       )
     }
@@ -306,6 +311,7 @@ module "ceph_3" {
           }
           ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.2.ip
+          public_network = local.params.network.addresses
         }
       )
     }

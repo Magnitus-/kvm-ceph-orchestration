@@ -31,7 +31,48 @@ write_files:
     permissions: "0400"
     content: |
       ${indent(6, ssh.private_key)}
-  - path: /opt/scripts/bootstrap.sh
+  - path: /opt/ceph/conf/services.yml
+    owner: root:root
+    permissions: "0500"
+    content: |
+      ---
+      service_type: mon
+      service_name: mon
+      placement:
+        count: 3
+        label: "mon"
+      ---
+      service_type: mgr
+      service_name: mgr
+      networks:
+        - ${public_network}
+      placement:
+        count: 2
+        label: "mgr"
+  - path: /opt/ceph/conf/hosts.yml
+    owner: root:root
+    permissions: "0500"
+    content: |
+%{ for node in ceph_cluster ~}
+      ---
+      service_type: host
+      hostname: ${node.domain}
+      addr: ${node.ip}
+      labels:
+%{ if node.monitor ~}
+        - mon
+%{ endif ~}
+%{ if node.manager ~}
+        - mgr
+%{ endif ~}
+%{ if node.osd ~}
+        - osd
+%{ endif ~}
+%{ if node.admin ~}
+        - _admin
+%{ endif ~}
+%{ endfor ~}
+  - path: /opt/ceph/scripts/bootstrap.sh
     owner: root:root
     permissions: "0500"
     content: |
@@ -42,26 +83,14 @@ write_files:
                         --dashboard-crt /opt/ceph/tls/server.crt \
                         --ssh-private-key /opt/ceph/ssh/ssh_key \
                         --ssh-public-key /opt/ceph/ssh/ssh_key.pub
-      ceph orch apply mon --unmanaged
-      ceph orch apply mgr --unmanaged
-  - path: /opt/scripts/expand.sh
+      ceph orch host add $(hostname) --labels=mon
+      ceph orch host add $(hostname) --labels=mgr
+      ceph orch apply -i /opt/ceph/conf/services.yml
+  - path: /opt/ceph/scripts/expand.sh
     owner: root:root
     permissions: "0500"
     content: |
-%{ for node in ceph_cluster ~}
-%{ if node.ip != self_ip ~}
-      ceph orch host add ${node.domain} ${node.ip}
-%{ endif ~}
-%{ if node.monitor ~}
-      ceph orch host label add ${node.domain} mon
-%{ endif ~}
-%{ if node.manager ~}
-      ceph orch host label add ${node.domain} mgr
-%{ endif ~}
-%{ if node.osd ~}
-      ceph orch host label add ${node.domain} osd
-%{ endif ~}
-%{ endfor ~}
+      ceph orch apply -i /opt/ceph/conf/hosts.yml
 
 runcmd:
   - wget https://download.ceph.com/rpm-18.2.0/el9/noarch/cephadm
