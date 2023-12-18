@@ -86,11 +86,16 @@ write_files:
       ceph orch host add $(hostname) --labels=mon
       ceph orch host add $(hostname) --labels=mgr
       ceph orch apply -i /opt/ceph/conf/services.yml
-  - path: /opt/ceph/scripts/expand.sh
+  - path: /opt/ceph/scripts/expand_cluster.sh
     owner: root:root
     permissions: "0500"
     content: |
       ceph orch apply -i /opt/ceph/conf/hosts.yml
+  - path: /opt/ceph/scripts/deploy_osds.sh
+    owner: root:root
+    permissions: "0500"
+    content: |
+      ceph orch apply osd --all-available-devices
 
 runcmd:
   - wget https://download.ceph.com/rpm-18.2.0/el9/noarch/cephadm
