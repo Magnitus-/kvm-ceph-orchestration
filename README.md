@@ -10,11 +10,9 @@ A Linux libvirt/kvm environment is expected for the host and terraform is used t
 
 # Disclaimer
 
-I created this projet to learn how to setup and operate a ceph cluster on virtual machines before I do it on real machines and also to test maintenance operations later on before I perform them on a live cluster.
+This project is based on what I've learned so far from the official ceph documentation so this project is based on pretty incomplete knowledge from a ceph novice and also is meant to work on a more resource-constrained local environment with fewer hosts to prepare for a only marginally more complex homelab environment.
 
-It is based on what I've learned so far from the official ceph documentation, but this is incomplete knowledge and also is meant to work on a more resource-constrained local environment with fewer hosts.
-
-In a production environment, at the very least least, you would probably want to separate your control plane (monitors, managers, etc) from your osds and use at least 4 machines for osds if you want a safe erasure code strategy than k = 2 , m = 1 on a hosts failure domain.
+In a serious production environment, at the very least least, you would probably want to separate your control plane hosts (monitors, managers, etc) from your  osds hosts and use at least 4 machines for osds if you want erasure coding with a safer strategy than k = 2 , m = 1. You would also likely want a more complex crush map than the default crush map (which only supports a failure domain on hosts) to allow for failure domains across different locations in the datacenter and possibly even across datacenters and regions. You may also want to perform many fine-tuning operations (primary affinity adjustment for different kinds of drive, fine tuning pg distribution across pools based on expectec size, fine-tuning scrubing recurrence, etc) that are outside the scope of this project.
 
 # Usage
 
