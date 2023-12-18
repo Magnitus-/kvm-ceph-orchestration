@@ -25,3 +25,33 @@ To setup the environment:
 5. In the **ceph-1** vm, run the **/opt/ceph/scripts/expand_cluster.sh** script as root to setup the rest of your control plane across all your 3 vms.
 6. In the **ceph-1** vm, run the **/opt/ceph/scripts/deploy_osds.sh** script to deploy the osd auto-provisioning daemon that will provision osds for all your free storage devices.
 
+# Useful Commands
+
+Compilation of some useful ceph commands that I'm updating as I learn.
+
+## Info commands
+
+1. For an overview: `ceph -s`
+2. A slightly more detailed overview: `ceph status`
+3. Automation-friendly command just to get cluster health: `ceph health`
+4. For an overview of your services: `ceph orch ls`
+5. List of externally accessible services endpoints (by ips) managed by the active mgr deamon: `ceph mgr services`
+6. For an overview of your hosts: `ceph orch host ls`
+7. For an overview of your devices and availability to be managed by osds: `ceph orch device ls`
+8. To view all your containers across hosts: `ceph orch ps`
+9. View the monitor map: `ceph mon dump`
+10. Overview of your managers (in json): `ceph mgr stat`
+11. Quick overview of your osds: `ceph osd stat`
+12. More detailed overview of your osds listing them: `ceph osd status`
+13. View you osds with weight and primary affinity adjustments: `ceph osd tree`
+14. View the crushmap (and optionally shadow crush maps if you have different kinds of devices): `ceph osd crush tree [--show-shadow]`
+15. Name listing of your crush rules: `ceph osd crush rule ls`
+16. Detailed listing of your crush rules: `ceph osd crush rule dump`
+17. Listing of available device classes (ex: hdd, ssd, nvme, etc): `ceph osd crush class ls`
+18. Listing of erasure code profiles by name: `ceph osd erasure-code-profile ls`
+19. More detailed view of particular erasure code profile: `ceph osd erasure-code-profile get default`
+20. List your pools with their ids: `ceph osd lspools`
+21. Quick overview of your placement groups: `ceph pg stat`
+22. More detailed listing of your placement groups: `ceph pg dump pgs_brief` 
+23. See osd automatic weight balancer status: `ceph balancer status`
+24. See pools placement groups autoscaling status: `ceph osd pool autoscale-status`
