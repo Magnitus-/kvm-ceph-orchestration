@@ -14,7 +14,8 @@ resource "tls_cert_request" "ceph" {
     [
       local.params.network.machines.ceph_nodes.0.ip,
       local.params.network.machines.ceph_nodes.1.ip,
-      local.params.network.machines.ceph_nodes.2.ip
+      local.params.network.machines.ceph_nodes.2.ip,
+      split("/", local.params.network.rgw_ingress_ip).0
     ], 
     ["127.0.0.1"]
   )

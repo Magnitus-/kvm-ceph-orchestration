@@ -196,6 +196,7 @@ module "ceph_1" {
           self_ip = local.params.network.machines.ceph_nodes.0.ip
           public_network = local.params.network.addresses
           rgw_zone = "local"
+          rgw_ingress_ip = local.params.network.rgw_ingress_ip
         }
       )
     }
@@ -257,6 +258,7 @@ module "ceph_2" {
           self_ip = local.params.network.machines.ceph_nodes.1.ip
           public_network = local.params.network.addresses
           rgw_zone = "local"
+          rgw_ingress_ip = local.params.network.rgw_ingress_ip
         }
       )
     }
@@ -318,6 +320,7 @@ module "ceph_3" {
           self_ip = local.params.network.machines.ceph_nodes.2.ip
           public_network = local.params.network.addresses
           rgw_zone = "local"
+          rgw_ingress_ip = local.params.network.rgw_ingress_ip
         }
       )
     }

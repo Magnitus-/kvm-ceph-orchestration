@@ -16,10 +16,16 @@ module "ceph_domain" {
   domain = "ceph.lan"
   key_prefix = "/coredns/"
   dns_server_name = "ns.lan."
-  a_records = [for idx, node in local.params.network.machines.ceph_nodes:
+  a_records = concat([for idx, node in local.params.network.machines.ceph_nodes:
     {
       prefix = "server-${idx + 1}"
       ip =  node.ip
     }
-  ]
+  ],
+  [
+    {
+      prefix = "rgw"
+      ip = split("/", local.params.network.rgw_ingress_ip).0
+    }
+  ])
 }

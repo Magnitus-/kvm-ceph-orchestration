@@ -53,17 +53,30 @@ write_files:
     owner: root:root
     permissions: "0500"
     content: |
+      ---
       service_type: rgw
       service_id: ${rgw_zone}
       placement:
         label: rgw
         count_per_host: 1
       spec:
-        rgw_realm: ${rgw_zone}
-        rgw_zonegroup: ${rgw_zone}
-        rgw_zone: ${rgw_zone}
         rgw_frontend_type: "beast"
         rgw_frontend_port: 8080
+      ---
+      service_type: ingress
+      service_id: rgw.${rgw_zone}
+      placement:
+        label: rgw
+        count: 3
+      backend_service: rgw.${rgw_zone}
+      virtual_ip: ${rgw_ingress_ip}
+      frontend_port: 4443
+      monitor_port: 1967
+      virtual_interface_networks:
+        - ${public_network}
+      ssl_cert: |
+        ${indent(8, tls.server_cert)}
+        ${indent(8, tls.server_key)}
   - path: /opt/ceph/conf/hosts.yml
     owner: root:root
     permissions: "0500"
@@ -159,6 +172,7 @@ write_files:
       ceph osd pool set ${rgw_zone}.compact.rgw.buckets.data min_size 3
       ceph osd pool application enable ${rgw_zone}.compact.rgw.buckets.data rgw
       ceph orch apply -i /opt/ceph/conf/rgw_services.yml
+      sleep 30
       #Deploy gateways
       radosgw-admin realm create --rgw-realm=${rgw_zone} --default
       #Create zone
