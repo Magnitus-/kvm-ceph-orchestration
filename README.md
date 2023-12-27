@@ -24,6 +24,8 @@ To setup the environment:
 4. In the **ceph-1** vm, run the **/opt/ceph/scripts/bootstrap.sh** script as root to boostrap your first monitor and manager in your control plane.
 5. In the **ceph-1** vm, run the **/opt/ceph/scripts/expand_cluster.sh** script as root to setup the rest of your control plane across all your 3 vms.
 6. In the **ceph-1** vm, run the **/opt/ceph/scripts/deploy_osds.sh** script to deploy the osd auto-provisioning daemon that will provision osds for all your free storage devices.
+7. In the **ceph-1** vm, run the **/opt/ceph/scripts/deploy_rgw.sh** script to deploy the Ceph object gateway to expose an s3/swift api.
+8. In the **ceph-1** vm, run the **/opt/ceph/scripts/generate_rgw_users.sh** script to generate some test s3/swift users.
 
 # Useful Commands
 

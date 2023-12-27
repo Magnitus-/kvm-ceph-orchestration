@@ -190,6 +190,16 @@ write_files:
       ceph osd pool rm default.rgw.control default.rgw.control --yes-i-really-really-mean-it
       ceph osd pool rm default.rgw.meta default.rgw.meta --yes-i-really-really-mean-it
       ceph tell mon.* injectargs --mon_allow_pool_delete false
+  - path: /opt/ceph/scripts/generate_rgw_users.sh
+    owner: root:root
+    permissions: "0500"
+    content: |
+%{ for user in rgw_users ~}
+      radosgw-admin user create --tenant=${user.tenant} --uid=${user.uid} --display-name="${user.display_name}" --email=${user.email}
+      radosgw-admin subuser create --tenant=${user.tenant} --uid=${user.uid} --subuser=${user.uid}:swift --access=${user.swift_access}
+      radosgw-admin key create --tenant=${user.tenant} --uid=${user.uid} --key-type=s3 --access-key=${user.uid} --secret-key=${user.secret_key}
+      radosgw-admin key create --tenant=${user.tenant} --uid=${user.uid} --subuser=${user.uid}:swift --key-type=swift --secret-key=${user.secret_key}
+%{ endfor ~}
 
 packages:
   - jq

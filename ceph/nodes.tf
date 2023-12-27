@@ -139,6 +139,32 @@ locals {
       rgw     = true
     }
   ]
+  rgw_users = [
+    {
+      uid = "user1"
+      display_name = "User One"
+      email = "user1@ceph.lan"
+      swift_access = "readwrite"
+      secret_key = "testtest"
+      tenant = "group1"
+    },
+    {
+      uid = "user2"
+      display_name = "User Two"
+      email = "user2@ceph.lan"
+      swift_access = "readwrite"
+      secret_key = "testtest"
+      tenant = "group1"
+    },
+    {
+      uid = "user3"
+      display_name = "User Three"
+      email = "user3@ceph.lan"
+      swift_access = "readwrite"
+      secret_key = "testtest"
+      tenant = "group2"
+    }
+  ]
 }
 
 module "ceph_1" {
@@ -197,6 +223,7 @@ module "ceph_1" {
           public_network = local.params.network.addresses
           rgw_zone = "local"
           rgw_ingress_ip = local.params.network.rgw_ingress_ip
+          rgw_users = local.rgw_users
         }
       )
     }
@@ -259,6 +286,7 @@ module "ceph_2" {
           public_network = local.params.network.addresses
           rgw_zone = "local"
           rgw_ingress_ip = local.params.network.rgw_ingress_ip
+          rgw_users = local.rgw_users
         }
       )
     }
@@ -321,6 +349,7 @@ module "ceph_3" {
           public_network = local.params.network.addresses
           rgw_zone = "local"
           rgw_ingress_ip = local.params.network.rgw_ingress_ip
+          rgw_users = local.rgw_users
         }
       )
     }
