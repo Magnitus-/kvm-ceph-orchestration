@@ -118,6 +118,7 @@ locals {
       manager = true
       admin   = true
       osd     = true
+      rgw     = true
     },
     {
       ip = local.params.network.machines.ceph_nodes.1.ip
@@ -126,6 +127,7 @@ locals {
       manager = true
       admin   = true
       osd     = true
+      rgw     = true
     },
     {
       ip = local.params.network.machines.ceph_nodes.2.ip
@@ -134,6 +136,7 @@ locals {
       manager = true
       admin   = true
       osd     = true
+      rgw     = true
     }
   ]
 }
@@ -192,6 +195,7 @@ module "ceph_1" {
           ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.0.ip
           public_network = local.params.network.addresses
+          rgw_zone = "local"
         }
       )
     }
@@ -252,6 +256,7 @@ module "ceph_2" {
           ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.1.ip
           public_network = local.params.network.addresses
+          rgw_zone = "local"
         }
       )
     }
@@ -312,6 +317,7 @@ module "ceph_3" {
           ceph_cluster = local.ceph_cluster
           self_ip = local.params.network.machines.ceph_nodes.2.ip
           public_network = local.params.network.addresses
+          rgw_zone = "local"
         }
       )
     }

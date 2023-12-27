@@ -61,6 +61,11 @@ Compilation of some useful ceph commands that I'm updating as I learn.
 28. See users: `ceph auth list`
 29. See specific user: `ceph auth get <user name>`
 30. See specific user access key: `ceph auth print-key <user name>`
+31. List rados gateway realms: `radosgw-admin realm list`
+32. See more info on a rados gateway realm: `radosgw-admin realm get --rgw-realm=<realm name>`
+33. List rados gateway zonegroups: `radosgw-admin zonegroup list`
+34. See more info on a rados gateway zonegroup: `radosgw-admin zonegroup get --rgw-zonegroup=<zonegroup name>`
+34. See more info on a rados gateway zone: `radosgw-admin zone get --rgw-zone=<zone name>`
 
 ## Crush Buckets Manipulation
 

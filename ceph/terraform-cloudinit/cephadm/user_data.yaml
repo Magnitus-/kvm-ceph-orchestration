@@ -49,6 +49,21 @@ write_files:
       placement:
         count: 2
         label: "mgr"
+  - path: /opt/ceph/conf/rgw_services.yml
+    owner: root:root
+    permissions: "0500"
+    content: |
+      service_type: rgw
+      service_id: ${rgw_zone}
+      placement:
+        label: rgw
+        count_per_host: 1
+      spec:
+        rgw_realm: ${rgw_zone}
+        rgw_zonegroup: ${rgw_zone}
+        rgw_zone: ${rgw_zone}
+        rgw_frontend_type: "beast"
+        rgw_frontend_port: 8080
   - path: /opt/ceph/conf/hosts.yml
     owner: root:root
     permissions: "0500"
@@ -67,6 +82,9 @@ write_files:
 %{ endif ~}
 %{ if node.osd ~}
         - osd
+%{ endif ~}
+%{ if node.rgw ~}
+        - rgw
 %{ endif ~}
 %{ if node.admin ~}
         - _admin
@@ -96,6 +114,71 @@ write_files:
     permissions: "0500"
     content: |
       ceph orch apply osd --all-available-devices
+  - path: /opt/ceph/scripts/deploy_rgw.sh
+    owner: root:root
+    permissions: "0500"
+    content: |
+      ceph osd erasure-code-profile set k2m1 k=2 m=1 crush-failure-domain=host
+      #Control pool
+      ceph osd pool create ${rgw_zone}.rgw.control 32 32 replicated replicated_rule
+      ceph osd pool set ${rgw_zone}.rgw.control size 3
+      ceph osd pool set ${rgw_zone}.rgw.control min_size 2
+      ceph osd pool application enable ${rgw_zone}.rgw.control rgw
+      #Meta pool
+      ceph osd pool create ${rgw_zone}.rgw.meta 32 32 replicated replicated_rule
+      ceph osd pool set ${rgw_zone}.rgw.meta size 3
+      ceph osd pool set ${rgw_zone}.rgw.meta min_size 2
+      ceph osd pool application enable ${rgw_zone}.rgw.meta rgw
+      #Log pool
+      ceph osd pool create ${rgw_zone}.rgw.log 32 32 replicated replicated_rule
+      ceph osd pool set ${rgw_zone}.rgw.log size 3
+      ceph osd pool set ${rgw_zone}.rgw.log min_size 2
+      ceph osd pool application enable ${rgw_zone}.rgw.log rgw
+      #Otp pool
+      ceph osd pool create ${rgw_zone}.rgw.otp 32 32 replicated replicated_rule
+      ceph osd pool set ${rgw_zone}.rgw.otp size 3
+      ceph osd pool set ${rgw_zone}.rgw.otp min_size 2
+      ceph osd pool application enable ${rgw_zone}.rgw.otp rgw
+      #Default placement group index pool
+      ceph osd pool create ${rgw_zone}.rgw.buckets.index 64 64 replicated replicated_rule
+      ceph osd pool set ${rgw_zone}.rgw.buckets.index size 3
+      ceph osd pool set ${rgw_zone}.rgw.buckets.index min_size 2
+      ceph osd pool application enable ${rgw_zone}.rgw.buckets.index rgw
+      #Default placement group extra data pool
+      ceph osd pool create ${rgw_zone}.rgw.buckets.non-ec 64 64 replicated replicated_rule
+      ceph osd pool set ${rgw_zone}.rgw.buckets.non-ec size 3
+      ceph osd pool set ${rgw_zone}.rgw.buckets.non-ec min_size 2
+      ceph osd pool application enable ${rgw_zone}.rgw.buckets.non-ec rgw
+      #Default placement group standard storage class
+      ceph osd pool create ${rgw_zone}.rgw.buckets.data 128 128 replicated replicated_rule
+      ceph osd pool set ${rgw_zone}.rgw.buckets.data size 3
+      ceph osd pool set ${rgw_zone}.rgw.buckets.data min_size 2
+      ceph osd pool application enable ${rgw_zone}.rgw.buckets.data rgw
+      #Default placement group compact storage class
+      ceph osd pool create ${rgw_zone}.compact.rgw.buckets.data 128 128 erasure k2m1
+      ceph osd pool set ${rgw_zone}.compact.rgw.buckets.data min_size 3
+      ceph osd pool application enable ${rgw_zone}.compact.rgw.buckets.data rgw
+      ceph orch apply -i /opt/ceph/conf/rgw_services.yml
+      #Deploy gateways
+      radosgw-admin realm create --rgw-realm=${rgw_zone} --default
+      #Create zone
+      radosgw-admin zonegroup create --rgw-zonegroup=${rgw_zone} --rgw-realm=${rgw_zone} --master --default
+      radosgw-admin zone create --rgw-zonegroup=${rgw_zone} --rgw-zone=${rgw_zone} --master --default
+      radosgw-admin zonegroup placement add --rgw-zonegroup ${rgw_zone} --placement-id default-placement --storage-class COMPACT
+      radosgw-admin zone placement add --rgw-zone ${rgw_zone} --placement-id default-placement --storage-class COMPACT --data-pool ${rgw_zone}.compact.rgw.buckets.data --compression lz4
+      #Cleanup default zone
+      radosgw-admin zonegroup delete --rgw-zonegroup=default --rgw-zone=default
+      radosgw-admin period update --commit
+      radosgw-admin zone delete --rgw-zone=default
+      radosgw-admin period update --commit
+      ceph tell mon.* injectargs --mon_allow_pool_delete true
+      ceph osd pool rm default.rgw.log default.rgw.log --yes-i-really-really-mean-it
+      ceph osd pool rm default.rgw.control default.rgw.control --yes-i-really-really-mean-it
+      ceph osd pool rm default.rgw.meta default.rgw.meta --yes-i-really-really-mean-it
+      ceph tell mon.* injectargs --mon_allow_pool_delete false
+
+packages:
+  - jq
 
 runcmd:
   - wget https://download.ceph.com/rpm-18.2.0/el9/noarch/cephadm

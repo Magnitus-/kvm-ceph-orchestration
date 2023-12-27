@@ -19,9 +19,7 @@ resource "tls_cert_request" "ceph" {
     ["127.0.0.1"]
   )
   dns_names = [
-    "server-1.ceph.lan",
-    "server-2.ceph.lan",
-    "server-3.ceph.lan",
+    "*.ceph.lan"
   ]
   subject {
     common_name  = "ceph"
