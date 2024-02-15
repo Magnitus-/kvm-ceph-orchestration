@@ -1,0 +1,85 @@
+all:
+  vars:
+    server_ca_cert: "{{ inventory_dir }}/shared/ca.crt"
+    server_cert: "{{ inventory_dir }}/shared/server.crt"
+    server_key: "{{ inventory_dir }}/shared/server.key"
+    ssh_key: "{{ inventory_dir }}/shared/ssh_key"
+    ssh_public: "{{ inventory_dir }}/shared/ssh_key_public"
+    public_network: "192.168.56.0/24"
+    rgw_ingress_ip: "192.168.56.50/24"
+    rgw_default_erasure_code_k: 2
+    rgw_default_erasure_code_m: 1
+    use_device_classes: true
+    has_ssd: false
+    has_rgw: true
+    cleanup_rgw: false
+    has_mds: true
+    osd_managed: true
+    cephfs_fs:
+      - name: default
+        data_replication: 2
+        metadata_replication: 3
+        data_pgs: 64
+    cephfs_fs_to_delete: []
+    mds_users:
+      - name: user1-mds
+        fs: default
+    mds_users_to_delete: ["eric-mds"]
+    rgw_users:
+      - name: user1
+        tenant: homelab
+        display_name: "User One"
+        email: "user1@user1.com"
+      - name: user2
+        tenant: homelab
+        display_name: "User Two"
+        email: "user2@user2.com"
+  children:
+    ceph:
+      hosts:
+        server1:
+        server2:
+        server3:
+    admin:
+      hosts:
+        server1:
+        server2:
+        server3:
+    metrics:
+      hosts:
+        server1:
+        server2:
+        server3:
+    mon:
+      hosts:
+        server1:
+        server2:
+        server3:
+    mgr:
+      hosts:
+        server1:
+        server2:
+        server3:
+    rgw:
+      hosts:
+        server1:
+        server2:
+        server3:
+    mds:
+      hosts:
+        server1:
+        server2:
+        server3:
+  hosts:
+    server1:
+      ansible_host: 192.168.56.13
+      ansible_port: 22
+      ansible_user: ubuntu
+    server2:
+      ansible_host: 192.168.56.14
+      ansible_port: 22
+      ansible_user: ubuntu
+    server3:
+      ansible_host: 192.168.56.15
+      ansible_port: 22
+      ansible_user: ubuntu

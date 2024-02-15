@@ -199,35 +199,7 @@ module "ceph_1" {
   cloud_init_volume_pool = "ceph"
   admin_user_password = local.params.virsh_console_password
   ssh_admin_public_key = file("${path.module}/../shared/ssh_key_public")
-  cloud_init_configurations = [
-    {
-      filename = "ceph_node.cfg"
-      content = file("${path.module}/terraform-cloudinit/ceph-node/user_data.yaml")
-    },
-    {
-      filename = "cephadm.cfg"
-      content = templatefile(
-        "${path.module}/terraform-cloudinit/cephadm/user_data.yaml",
-        {
-          tls = {
-            ca_cert     = module.ceph_ca.certificate
-            server_cert = tls_locally_signed_cert.ceph.cert_pem
-            server_key  = tls_private_key.ceph.private_key_pem
-          }
-          ssh = {
-            public_key  = file("${path.module}/../shared/ssh_key_public")
-            private_key = file("${path.module}/../shared/ssh_key")
-          }
-          ceph_cluster = local.ceph_cluster
-          self_ip = local.params.network.machines.ceph_nodes.0.ip
-          public_network = local.params.network.addresses
-          rgw_zone = "local"
-          rgw_ingress_ip = local.params.network.rgw_ingress_ip
-          rgw_users = local.rgw_users
-        }
-      )
-    }
-  ]
+  cloud_init_configurations = []
 }
 
 module "ceph_2" {
@@ -262,35 +234,7 @@ module "ceph_2" {
   cloud_init_volume_pool = "ceph"
   admin_user_password = local.params.virsh_console_password
   ssh_admin_public_key = file("${path.module}/../shared/ssh_key_public")
-  cloud_init_configurations = [
-    {
-      filename = "ceph_node.cfg"
-      content = file("${path.module}/terraform-cloudinit/ceph-node/user_data.yaml")
-    },
-    {
-      filename = "cephadm.cfg"
-      content = templatefile(
-        "${path.module}/terraform-cloudinit/cephadm/user_data.yaml",
-        {
-          tls = {
-            ca_cert     = module.ceph_ca.certificate
-            server_cert = tls_locally_signed_cert.ceph.cert_pem
-            server_key  = tls_private_key.ceph.private_key_pem
-          }
-          ssh = {
-            public_key  = file("${path.module}/../shared/ssh_key_public")
-            private_key = file("${path.module}/../shared/ssh_key")
-          }
-          ceph_cluster = local.ceph_cluster
-          self_ip = local.params.network.machines.ceph_nodes.1.ip
-          public_network = local.params.network.addresses
-          rgw_zone = "local"
-          rgw_ingress_ip = local.params.network.rgw_ingress_ip
-          rgw_users = local.rgw_users
-        }
-      )
-    }
-  ]
+  cloud_init_configurations = []
 }
 
 module "ceph_3" {
@@ -325,33 +269,5 @@ module "ceph_3" {
   cloud_init_volume_pool = "ceph"
   admin_user_password = local.params.virsh_console_password
   ssh_admin_public_key = file("${path.module}/../shared/ssh_key_public")
-  cloud_init_configurations = [
-    {
-      filename = "ceph_node.cfg"
-      content = file("${path.module}/terraform-cloudinit/ceph-node/user_data.yaml")
-    },
-    {
-      filename = "cephadm.cfg"
-      content = templatefile(
-        "${path.module}/terraform-cloudinit/cephadm/user_data.yaml",
-        {
-          tls = {
-            ca_cert     = module.ceph_ca.certificate
-            server_cert = tls_locally_signed_cert.ceph.cert_pem
-            server_key  = tls_private_key.ceph.private_key_pem
-          }
-          ssh = {
-            public_key  = file("${path.module}/../shared/ssh_key_public")
-            private_key = file("${path.module}/../shared/ssh_key")
-          }
-          ceph_cluster = local.ceph_cluster
-          self_ip = local.params.network.machines.ceph_nodes.2.ip
-          public_network = local.params.network.addresses
-          rgw_zone = "local"
-          rgw_ingress_ip = local.params.network.rgw_ingress_ip
-          rgw_users = local.rgw_users
-        }
-      )
-    }
-  ]
+  cloud_init_configurations = []
 }
