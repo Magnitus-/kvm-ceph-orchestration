@@ -24,7 +24,7 @@ all:
     mds_users:
       - name: user1-mds
         fs: default
-    mds_users_to_delete: ["eric-mds"]
+    mds_users_to_delete: []
     rgw_users:
       - name: user1
         tenant: homelab
