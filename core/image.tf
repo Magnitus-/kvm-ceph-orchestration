@@ -1,7 +1,7 @@
 resource "libvirt_pool" "ceph" {
   name = "ceph"
   type = "dir"
-  path = "/home/eric/data/libvirt/ceph"
+  path = var.ceph_pool_path
 }
 
 resource "libvirt_volume" "ubuntu_jammy_2023_10_26" {

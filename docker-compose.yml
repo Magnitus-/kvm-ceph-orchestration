@@ -1,0 +1,13 @@
+version: "3"
+services:
+  ansible:
+    build:
+      context: ansible-dockerfile
+      dockerfile: Dockerfile
+    environment:
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+    volumes:
+      - .:/opt/ceph-ansible:r
+    working_dir: /opt/ceph-ansible
+    network_mode: "host"
+    command: "ansible-playbook ansible/playbooks/ceph-cluster.yml -i ansible-inventory-ceph --private-key ./shared/ssh_key"

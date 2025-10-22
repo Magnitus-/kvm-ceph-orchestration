@@ -9,7 +9,7 @@ The cephadm method of installation is used with the **reef** version of ceph.
 The following components must be present on the host for this setup to work the host:
 - Libvirt/kvm support
 - Terraform
-- Ansible
+- Ansible (to run it directly from your host) or docker/containerd (to run it in a container)
 
 # Disclaimer
 
@@ -21,10 +21,12 @@ In a serious production environment, at the very least least, you would probably
 
 To setup the environment:
 
-1. Go to the **core** directory and run `terraform init & terraform apply` to setup the libvirt network, shared ssh key and ubuntu image that is to be used in all the vms.
+1. Go to the **core** directory:
+  - Create a **terraform.tfvars** file where you assign to the **ceph_pool_path** variable the directory path where you want the ceph libvirt pool to be
+  - Run `terraform init & terraform apply` to setup the libvirt network, shared ssh key and ubuntu image that is to be used in all the vms.
 2. Go to the **ops** directory and run `terraform init & terraform apply` to setup coredns hosts for the ceph vm domains. If you want to have a seamless experience with the dashboard, you can add the ips of the ops nodes (found in the **params.json** file) as dns nameservers in your host's **etc/resolv.conf** file.
 3. Go to the **ceph** directory and run `terraform init & terraform apply` to setup the ceph hosts. Wait for cloud init to finish.
-4. At the root of this project, run the **run-ansible-ceph.sh** script to setup ceph on your vms with ansible.
+4. At the root of this project, run the **run-ansible.sh** (if you want to run ansible from your host) or **run-ansible-container.sh** (if you want to run ansible from a container) script to setup ceph on your vms with ansible.
 
 ## Interacting with dashboard
 
