@@ -8,7 +8,7 @@ all:
     public_network: "192.168.56.0/24"
     rgw_ingress_ip: "192.168.56.50/24"
     rgw_default_erasure_code_k: 2
-    rgw_default_erasure_code_m: 1
+    rgw_default_erasure_code_m: 2
     use_device_classes: true
     has_ssd: false
     has_rgw: true
@@ -17,7 +17,7 @@ all:
     osd_managed: true
     cephfs_fs:
       - name: default
-        data_replication: 2
+        data_replication: 3
         metadata_replication: 3
         data_pgs: 64
     cephfs_fs_to_delete: []
@@ -40,36 +40,45 @@ all:
         server1:
         server2:
         server3:
+        server4:
     admin:
       hosts:
         server1:
         server2:
         server3:
+        server4:
     metrics:
       hosts:
         server1:
         server2:
         server3:
+        server4:
     mon:
       hosts:
         server1:
         server2:
         server3:
+        server4:
     mgr:
       hosts:
         server1:
         server2:
         server3:
+        server4:
     rgw:
       hosts:
         server1:
         server2:
         server3:
+        server4:
     mds:
       hosts:
         server1:
         server2:
         server3:
+        server4:
+    maintenance:
+      hosts:
   hosts:
     server1:
       ansible_host: 192.168.56.13
@@ -81,5 +90,9 @@ all:
       ansible_user: ubuntu
     server3:
       ansible_host: 192.168.56.15
+      ansible_port: 22
+      ansible_user: ubuntu
+    server4:
+      ansible_host: 192.168.56.16
       ansible_port: 22
       ansible_user: ubuntu

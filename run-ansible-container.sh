@@ -7,4 +7,6 @@ else
     exit 1;
 fi
 
-bash -c "$COMMAND run ansible"
+PLAYBOOK="${1:-setup}"
+
+bash -c "$COMMAND run $PLAYBOOK"
